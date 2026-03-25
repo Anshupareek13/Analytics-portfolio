@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Analytics Portfolio</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050505;
+            color: #f5f5f5;
+            padding: 40px 20px;
+        }
+
+        .page-wrapper {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #cfcfcf;
+            text-decoration: none;
+            font-size: 15px;
+            margin-bottom: 26px;
+            transition: 0.25s ease;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .about-card {
+            background: #070707;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 22px;
+            padding: 38px 34px 28px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+        }
+
+        .main-title {
+            font-size: 58px;
+            line-height: 1.05;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #8c5bff, #ff4fc9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 30px;
+            color: #bdbdbd;
+            margin-bottom: 42px;
+        }
+
+        .section {
+            margin-bottom: 38px;
+        }
+
+        .section h2 {
+            font-size: 34px;
+            color: #ffffff;
+            margin-bottom: 18px;
+            font-weight: 800;
+        }
+
+        .section p {
+            font-size: 22px;
+            line-height: 1.8;
+            color: #c8c8c8;
+            max-width: 980px;
+        }
+
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .feature-list li {
+            position: relative;
+            padding-left: 24px;
+            font-size: 22px;
+            line-height: 1.7;
+            color: #d5d5d5;
+        }
+
+        .feature-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #9b6dff;
+            font-size: 28px;
+            line-height: 1;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .contact-card {
+            background: #090909;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 18px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: 0.25s ease;
+            min-height: 92px;
+        }
+
+        .contact-card:hover {
+            border-color: rgba(184, 92, 255, 0.45);
+            transform: translateY(-3px);
+        }
+
+        .contact-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: rgba(255,255,255,0.04);
+            flex-shrink: 0;
+        }
+
+        .icon-purple {
+            color: #9b6dff;
+        }
+
+        .icon-pink {
+            color: #ff4fc9;
+        }
+
+        .icon-blue {
+            color: #6f7dff;
+        }
+
+        .contact-text small {
+            display: block;
+            font-size: 14px;
+            color: #8f8f8f;
+            margin-bottom: 4px;
+        }
+
+        .contact-text strong,
+        .contact-text a {
+            font-size: 20px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .footer-line {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.10);
+            margin: 30px 0 18px;
+        }
+
+        .footer-text {
+            text-align: center;
+            color: #8f8f8f;
+            font-size: 17px;
+        }
+
+        @media (max-width: 992px) {
+            .main-title {
+                font-size: 42px;
+            }
+
+            .subtitle {
+                font-size: 24px;
+            }
+
+            .section h2 {
+                font-size: 28px;
+            }
+
+            .section p,
+            .feature-list li {
+                font-size: 18px;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-text strong,
+            .contact-text a {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 22px 14px;
+            }
+
+            .about-card {
+                padding: 28px 20px 22px;
+            }
+
+            .main-title {
+                font-size: 34px;
+            }
+
+            .subtitle {
+                font-size: 20px;
+                margin-bottom: 28px;
+            }
+
+            .section {
+                margin-bottom: 28px;
+            }
+
+            .section h2 {
+                font-size: 24px;
+            }
+
+            .section p,
+            .feature-list li {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+
+        <div class="about-card">
+            <h1 class="main-title">About Analytics Portfolio</h1>
+            <p class="subtitle">Showcase your projects with style</p>
+
+            <div class="section">
+                <h2>Our Mission</h2>
+                <p>
+                    Analytics Portfolio is designed to help professionals, developers, and creators
+                    showcase their work in a beautiful, interactive way. We believe that your projects
+                    deserve to be presented with the same care and attention you put into creating them.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>Features</h2>
+                <ul class="feature-list">
+                    <li>Interactive project cards for engaging portfolio presentation</li>
+                    <li>Visual analytics to track your portfolio growth over time</li>
+                    <li>Beautiful dark-mode interface with neon accents</li>
+                    <li>Secure authentication and profile management</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>Get in Touch</h2>
+
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <div class="contact-icon icon-purple">✉</div>
+                        <div class="contact-text">
+                            <small>Email</small>
+                            <a href="mailto:hello@analytics.dev">hello@analytics.dev</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon icon-pink">🌐</div>
+                        <div class="contact-text">
+                            <small>Website</small>
+                            <a href="#" onclick="return false;">analytics-portfolio.com</a>
+                        </div>
+                    </div>
+
+                    <div class="contact-card">
+                        <div class="contact-icon icon-blue">👥</div>
+                        <div class="contact-text">
+                            <small>Community</small>
+                            <a href="#" onclick="return false;">Join Discord</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="footer-line">
+
+            <p class="footer-text">
+                © 2025 Analytics Portfolio. Built with passion for creators.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

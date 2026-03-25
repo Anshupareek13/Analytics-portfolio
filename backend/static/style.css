@@ -1,0 +1,191 @@
+html {
+    scroll-behavior: smooth;
+}
+body {
+    /* Previous CSS (if any) */
+
+body{
+margin:0;
+font-family:Arial;
+background:#f4f6f9;
+}
+
+.dashboard{
+display:flex;
+}
+
+.sidebar{
+width:220px;
+height:100vh;
+background:#1f2d3d;
+color:white;
+padding:20px;
+}
+
+.sidebar h2{
+margin-bottom:30px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+padding:10px;
+text-decoration:none;
+margin-bottom:10px;
+}
+
+.sidebar a:hover{
+background:#34495e;
+}
+
+.main{
+flex:1;
+padding:40px;
+}
+
+.cards{
+display:flex;
+gap:20px;
+margin-top:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+width:150px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.chart-box{
+background:white;
+padding:30px;
+margin-top:40px;
+border-radius:10px;
+width:600px;
+}
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    background-color: #ffffff;
+    padding: 30px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+section {
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: #2c3e50;
+}
+
+h2 {
+    color: #34495e;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+
+p, li {
+    font-size: 16px;
+    color: #333;
+}
+
+.project-box {
+    background-color: #f0f3f5;
+    padding: 15px;
+    border-left: 4px solid #3498db;
+}
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    color: #777;
+    font-size: 14px;
+}
+
+.navbar {
+    background-color: #2c3e50;
+    padding: 15px 0;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar li {
+    margin: 0 20px;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+    align-items: stretch;
+}
+
+.ats-card {
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+}
+
+.ats-link {
+    text-decoration: none;
+    width: 100%;
+}
+
+/* IMPORTANT: gradient same as brand */
+.ats-title {
+    font-size: 34px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #8c5bff, #ff4fc9);
+    -webkit-text-fill-color: transparent;
+    margin-top: 6px;
+}
+
+/* upper small label */
+.ats-label {
+    color: #9f9f9f;
+    font-size: 16px;
+}
+
+/* description */
+.ats-desc {
+    margin-top: 10px;
+    color: #9e9e9e;
+    font-size: 14px;
+}
+
+.stats-card,
+.ats-card {
+    height: 100%;
+}

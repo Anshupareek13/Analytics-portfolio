@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Analyzer</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050505;
+            color: #f5f5f5;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(140, 91, 255, 0.08), transparent 22%),
+                radial-gradient(circle at 85% 18%, rgba(255, 79, 201, 0.06), transparent 24%),
+                radial-gradient(circle at 80% 78%, rgba(111, 125, 255, 0.06), transparent 24%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #cfcfcf;
+            text-decoration: none;
+            font-size: 15px;
+            transition: 0.25s ease;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .page-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8c5bff, #4f5dff);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            box-shadow: 0 12px 24px rgba(92, 93, 255, 0.25);
+            flex-shrink: 0;
+        }
+
+        .main-card {
+            background: #070707;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 22px;
+            padding: 34px 34px 30px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+        }
+
+        .main-card h1 {
+            font-size: 50px;
+            line-height: 1.05;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #9d9d9d;
+            margin-bottom: 34px;
+        }
+
+        .flash-box {
+            margin-bottom: 22px;
+            background: rgba(255,255,255,0.06);
+            color: #ffffff;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            font-weight: 700;
+            opacity: 1;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .flash-box.hide {
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            background: #141414;
+            border: 1px solid #353535;
+            color: #ffffff;
+            padding: 14px 16px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.25s ease;
+            height: 52px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #7b61ff;
+            box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.12);
+        }
+
+        .helper-text {
+            margin-top: 8px;
+            color: #8f8f8f;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 14px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn,
+        .secondary-btn {
+            height: 52px;
+            border: 1px solid transparent;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 22px;
+        }
+
+        .primary-btn {
+            flex: 1;
+            background: linear-gradient(90deg, #8c5bff, #4f5dff);
+            color: white;
+            box-shadow: 0 10px 22px rgba(92, 93, 255, 0.25);
+        }
+
+        .primary-btn:hover {
+            opacity: 0.92;
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: white;
+            border-color: #353535;
+        }
+
+        .secondary-btn:hover {
+            background: #111111;
+        }
+
+        .result-card {
+            margin-top: 28px;
+            background: #0b0b0b;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 24px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .score-box {
+            font-size: 54px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 10px 0 8px;
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(140,91,255,0.18), rgba(79,93,255,0.18));
+            border: 1px solid rgba(255,255,255,0.10);
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .result-text {
+            color: #b0b0b0;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .skill-section {
+            margin-top: 18px;
+        }
+
+        .skill-section h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chip {
+            background: #101010;
+            border: 1px solid rgba(255,255,255,0.10);
+            color: #ffffff;
+            padding: 8px 13px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .chip.good {
+            border-color: rgba(77, 214, 122, 0.35);
+        }
+
+        .chip.bad {
+            border-color: rgba(255, 110, 110, 0.35);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 22px 14px;
+            }
+
+            .main-card {
+                padding: 24px 20px 22px;
+            }
+
+            .main-card h1 {
+                font-size: 38px;
+            }
+
+            .subtitle {
+                font-size: 17px;
+                margin-bottom: 26px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-row {
+                flex-direction: column;
+            }
+
+            .primary-btn,
+            .secondary-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="top-bar">
+            <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+            <div class="page-badge">ATS</div>
+        </div>
+
+        <div class="main-card">
+            <h1>ATS Analyzer</h1>
+            <p class="subtitle">Analyze how well your project matches a target job role.</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-box" id="flashMessage">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="project_id">Select Your Project</label>
+                        <select name="project_id" id="project_id" required>
+                            <option value="">Choose a project</option>
+                            {% for project in projects %}
+                                <option value="{{ project[0] }}"
+                                    {% if selected_project_id and selected_project_id|string == project[0]|string %}selected{% endif %}>
+                                    {{ project[1] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="job_role">Target Job Role</label>
+                        <select name="job_role" id="job_role" required>
+                            <option value="">Choose a role</option>
+                            {% for role in roles %}
+                                <option value="{{ role }}"
+                                    {% if selected_role == role %}selected{% endif %}>
+                                    {{ role.title() }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="domain">Project Domain</label>
+                        <input
+                            type="text"
+                            id="domain"
+                            name="domain"
+                            placeholder="e.g. Healthcare, Finance, E-commerce"
+                            value="{{ selected_domain if selected_domain else '' }}"
+                        >
+                        <div class="helper-text">Optional, but useful for better analysis.</div>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <button class="primary-btn" type="submit">Analyze Project</button>
+                    <a class="secondary-btn" href="/dashboard">Cancel</a>
+                </div>
+            </form>
+
+            {% if result %}
+                <div class="result-card">
+                    <div class="result-title">{{ result.project[1] }}</div>
+                    <div class="score-box">{{ result.score }}%</div>
+                    <div class="level-badge">{{ result.level }}</div>
+                    <div class="result-text">{{ result.feedback }}</div>
+
+                    <div class="skill-section">
+                        <h3>Matched Skills</h3>
+                        <div class="chips">
+                            {% if result.matched_skills %}
+                                {% for skill in result.matched_skills %}
+                                    <span class="chip good">{{ skill }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="chip">No strong match found</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="skill-section">
+                        <h3>Missing Skills</h3>
+                        <div class="chips">
+                            {% if result.missing_skills %}
+                                {% for skill in result.missing_skills %}
+                                    <span class="chip bad">{{ skill }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="chip good">No major missing skill</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="skill-section">
+                        <h3>Required Skills for Role</h3>
+                        <div class="chips">
+                            {% if result.required_skills %}
+                                {% for skill in result.required_skills %}
+                                    <span class="chip">{{ skill }}</span>
+                                {% endfor %}
+                            {% else %}
+                                <span class="chip">No skill mapping available</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const flashMessage = document.getElementById("flashMessage");
+        if (flashMessage) {
+            setTimeout(() => {
+                flashMessage.classList.add("hide");
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

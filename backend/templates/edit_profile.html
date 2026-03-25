@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050505;
+            color: #f5f5f5;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(140, 91, 255, 0.08), transparent 22%),
+                radial-gradient(circle at 85% 18%, rgba(255, 79, 201, 0.06), transparent 24%),
+                radial-gradient(circle at 80% 78%, rgba(111, 125, 255, 0.06), transparent 24%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .page-wrapper {
+            max-width: 950px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: #cfcfcf;
+            text-decoration: none;
+            font-size: 15px;
+            transition: 0.25s ease;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .page-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8c5bff, #4f5dff);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            box-shadow: 0 12px 24px rgba(92, 93, 255, 0.25);
+            flex-shrink: 0;
+        }
+
+        .profile-card {
+            background: #070707;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 22px;
+            padding: 34px 34px 30px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+        }
+
+        .profile-card h1 {
+            font-size: 50px;
+            line-height: 1.05;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #9d9d9d;
+            margin-bottom: 30px;
+        }
+
+        .flash-box {
+            margin-bottom: 22px;
+            background: rgba(255,255,255,0.06);
+            color: #ffffff;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            font-weight: 700;
+            opacity: 1;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .flash-box.hide {
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+        }
+
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 26px;
+            align-items: start;
+        }
+
+        .photo-card {
+            background: #0b0b0b;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 22px;
+            text-align: center;
+        }
+
+        .photo-preview {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.10);
+            background: #141414;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .default-avatar {
+            font-size: 64px;
+            color: #a8a8a8;
+        }
+
+        .upload-label {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #8c5bff, #4f5dff);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 22px rgba(92, 93, 255, 0.25);
+        }
+
+        .upload-label:hover {
+            opacity: 0.92;
+        }
+
+        .file-note {
+            margin-top: 10px;
+            color: #8f8f8f;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .form-card {
+            background: #0b0b0b;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 52px;
+            background: #141414;
+            border: 1px solid #353535;
+            color: #ffffff;
+            padding: 0 16px;
+            font-size: 15px;
+            outline: none;
+            transition: 0.25s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #7b61ff;
+            box-shadow: 0 0 0 3px rgba(123, 97, 255, 0.12);
+        }
+
+        .helper-text {
+            margin-top: 8px;
+            color: #8f8f8f;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 14px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn,
+        .secondary-btn {
+            height: 52px;
+            border: 1px solid transparent;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.25s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 22px;
+        }
+
+        .primary-btn {
+            flex: 1;
+            background: linear-gradient(90deg, #8c5bff, #4f5dff);
+            color: white;
+            box-shadow: 0 10px 22px rgba(92, 93, 255, 0.25);
+        }
+
+        .primary-btn:hover {
+            opacity: 0.92;
+        }
+
+        .secondary-btn {
+            background: transparent;
+            color: white;
+            border-color: #353535;
+        }
+
+        .secondary-btn:hover {
+            background: #111111;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 22px 14px;
+            }
+
+            .profile-card {
+                padding: 24px 20px 22px;
+            }
+
+            .profile-card h1 {
+                font-size: 38px;
+            }
+
+            .subtitle {
+                font-size: 17px;
+                margin-bottom: 24px;
+            }
+
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .action-row {
+                flex-direction: column;
+            }
+
+            .primary-btn,
+            .secondary-btn {
+                width: 100%;
+            }
+
+            .page-badge {
+                width: 46px;
+                height: 46px;
+                font-size: 20px;
+            }
+
+            .photo-preview {
+                width: 140px;
+                height: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="top-bar">
+            <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+            <div class="page-badge">👤</div>
+        </div>
+
+        <div class="profile-card">
+            <h1>Profile</h1>
+            <p class="subtitle">View and update your basic account details and profile photo.</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-box" id="flashMessage">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" enctype="multipart/form-data" onsubmit="return confirmUpdate()">
+                <div class="profile-layout">
+                    <div class="photo-card">
+                        <div class="photo-preview">
+                            {% if user and user[2] %}
+                                <img id="photoPreview" src="/{{ user[2] }}" alt="Profile Photo">
+                            {% else %}
+                                <div id="defaultAvatar" class="default-avatar">👤</div>
+                                <img id="photoPreview" src="" alt="Profile Photo" style="display:none;">
+                            {% endif %}
+                        </div>
+
+                        <label for="profile_photo" class="upload-label">Upload Photo</label>
+                        <input class="file-input" type="file" id="profile_photo" name="profile_photo" accept="image/*" onchange="previewImage(event)">
+                        <div class="file-note">JPG, PNG, JPEG image upload kar sakte ho.</div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                placeholder="Enter username"
+                                value="{{ user[0] if user and user[0] else '' }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter email"
+                                value="{{ user[1] if user and user[1] else '' }}"
+                                required
+                            >
+                            <div class="helper-text">Username aur email dono update kar sakte ho.</div>
+                        </div>
+
+                        <div class="action-row">
+                            <button class="primary-btn" type="submit">Save Profile</button>
+                            <a class="secondary-btn" href="/dashboard">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function confirmUpdate() {
+            return confirm("Are you sure you want to update your profile?");
+        }
+
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById("photoPreview");
+            const avatar = document.getElementById("defaultAvatar");
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                    if (avatar) avatar.style.display = "none";
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        const flashMessage = document.getElementById("flashMessage");
+        if (flashMessage) {
+            setTimeout(() => {
+                flashMessage.classList.add("hide");
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

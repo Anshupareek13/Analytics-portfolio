@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive Data Analytics Portfolio</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<h2>Analytics Summary</h2>
+
+<div id="summary">
+  <p>Projects: <span id="projects">Loading...</span></p>
+  <p>Skills: <span id="skills">Loading...</span></p>
+  <p>Certifications: <span id="certifications">Loading...</span></p>
+  <p>Experience (Years): <span id="experience">Loading...</span></p>
+</div>
+
+    <div class="container">
+
+        <header>
+            <h1>Interactive Data Analytics Portfolio</h1>
+            <p>Welcome to my professional portfolio website.</p>
+        </header>
+
+        <section id="about">
+            <h2>About Me</h2>
+            <p>
+                I am a Computer Science Engineering student with a strong interest
+                in Data Analytics. This website showcases my skills, projects,
+                and analytical work.
+            </p>
+        </section>
+
+        <section id="skills">
+            <h2>Skills</h2>
+            <ul>
+                <li>Python</li>
+                <li>Data Analysis</li>
+                <li>Pandas & NumPy</li>
+                <li>Data Visualization</li>
+                <li>HTML & CSS</li>
+            </ul>
+        </section>
+
+       <section id="projects">
+            <h2>Projects</h2>
+            <p>
+                My projects will be automatically fetched from GitHub and
+                displayed here.
+            </p>
+            <div class="project-box">
+                <p><em>GitHub integration coming soon...</em></p>
+            </div>
+        </section>
+
+       <section id="contact">
+            <h2>Contact</h2>
+            <p>Email: anshupareekk5@gmail.com</p>
+            <p>GitHub: https://github.com/your-username</p>
+        </section>
+
+        <footer>
+            <p>© 2026 Interactive Data Analytics Portfolio</p>
+        </footer>
+
+    </div>
+
+    <nav class="navbar">
+    <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+</nav>
+<script>
+  fetch("/api/summary")
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("projects").innerText = data.projects;
+      document.getElementById("skills").innerText = data.skills;
+      document.getElementById("certifications").innerText = data.certifications;
+      document.getElementById("experience").innerText = data.experience_years;
+    })
+    .catch(error => console.error("Error:", error));
+</script>
+</body>
+</html>

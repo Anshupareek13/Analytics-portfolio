@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ username }} GitHub Profile</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #050505;
+            color: #f5f5f5;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(140, 91, 255, 0.08), transparent 22%),
+                radial-gradient(circle at 85% 18%, rgba(255, 79, 201, 0.06), transparent 24%),
+                radial-gradient(circle at 80% 78%, rgba(111, 125, 255, 0.06), transparent 24%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .page {
+            position: relative;
+            z-index: 1;
+            padding: 28px 22px 32px;
+            max-width: 1450px;
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding-bottom: 18px;
+            margin-bottom: 26px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #8c5bff, #ff4fc9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .top-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .top-link {
+            height: 40px;
+            padding: 0 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: #0d0d0d;
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .top-link:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: #070707;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 18px;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.22);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .profile-card {
+            padding: 24px;
+        }
+
+        .profile-name {
+            font-size: 42px;
+            line-height: 1.05;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .profile-subtitle {
+            color: #aaaaaa;
+            font-size: 18px;
+            margin-bottom: 18px;
+        }
+
+        .profile-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 92px;
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(140,91,255,0.18), rgba(255,79,201,0.18));
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .section-card {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 14px;
+        }
+
+        .section-text {
+            color: #b0b0b0;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .analytics-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .analytics-list li {
+            color: #b0b0b0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .analytics-list strong {
+            color: #ffffff;
+        }
+
+        .language-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .language-chip {
+            background: #101010;
+            border: 1px solid rgba(255,255,255,0.10);
+            color: #ffffff;
+            padding: 8px 13px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .hero-card {
+            padding: 24px;
+        }
+
+        .hero-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .hero-title {
+            font-size: 34px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .hero-subtitle {
+            color: #9e9e9e;
+            font-size: 15px;
+            line-height: 1.6;
+            max-width: 720px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn,
+        .secondary-btn {
+            height: 42px;
+            padding: 0 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .primary-btn {
+            background: linear-gradient(90deg, #8c5bff, #5a64ff);
+            color: #fff;
+            border: none;
+            box-shadow: 0 10px 22px rgba(92, 93, 255, 0.25);
+        }
+
+        .primary-btn:hover {
+            opacity: 0.92;
+        }
+
+        .secondary-btn {
+            background: #0d0d0d;
+            border: 1px solid rgba(255,255,255,0.10);
+            color: #fff;
+        }
+
+        .secondary-btn:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .mini-stat {
+            padding: 18px;
+            border-radius: 16px;
+            background: #0b0b0b;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .mini-stat-label {
+            color: #9f9f9f;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .mini-stat-value {
+            color: #fff;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .repos-section {
+            padding: 22px;
+        }
+
+        .repos-heading {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 18px;
+        }
+
+        .repos-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        .repo-card {
+            background: #0b0b0b;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 18px;
+            min-height: 210px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .repo-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .repo-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.3;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .repo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(140,91,255,0.20), rgba(79,93,255,0.20));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .repo-language {
+            color: #b0b0b0;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            word-break: break-word;
+        }
+
+        .repo-language strong {
+            color: #d9d9d9;
+        }
+
+        .repo-link {
+            height: 36px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.10);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #111;
+            color: #fff;
+            width: fit-content;
+        }
+
+        .repo-link:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .empty-state {
+            padding: 36px 20px;
+            text-align: center;
+            color: #a8a8a8;
+            font-size: 15px;
+            border-radius: 16px;
+            background: #0b0b0b;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        @media (max-width: 1100px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .repos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page {
+                padding: 18px 14px 24px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .profile-name {
+                font-size: 34px;
+            }
+
+            .hero-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="topbar">
+            <div class="brand">Analytics Portfolio</div>
+
+            <div class="top-links">
+                <a href="/dashboard" class="top-link">Dashboard</a>
+                <a href="/portfolio/{{ username }}" class="top-link">Portfolio</a>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="sidebar">
+                <div class="card profile-card">
+                    <h1 class="profile-name">{{ username }}</h1>
+                    <div class="profile-subtitle">GitHub Analytics Overview</div>
+                    <div class="profile-badge">Live GitHub Data</div>
+                </div>
+
+                <div class="card section-card">
+                    <div class="section-title">Overview</div>
+                    <ul class="analytics-list">
+                        <li><strong>Total Repositories:</strong> {{ repos|length }}</li>
+                        <li><strong>Languages Used:</strong> {{ language_data|length }}</li>
+                        <li><strong>Integration:</strong> GitHub API Connected</li>
+                        <li><strong>Status:</strong> Live Analytics Enabled</li>
+                    </ul>
+                </div>
+
+                <div class="card section-card">
+                    <div class="section-title">Languages</div>
+                    <div class="language-wrap">
+                        {% if language_data %}
+                            {% for language, count in language_data.items() %}
+                                <span class="language-chip">{{ language }} ({{ count }})</span>
+                            {% endfor %}
+                        {% else %}
+                            <div class="section-text">No language data available.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="card hero-card">
+                    <div class="hero-top">
+                        <div>
+                            <div class="hero-title">GitHub Repositories</div>
+                            <div class="hero-subtitle">
+                                Explore the repositories, languages, and public code highlights connected to this GitHub profile in a clean and premium layout.
+                            </div>
+                        </div>
+
+                        <div class="hero-actions">
+                            <a href="/portfolio/{{ username }}" class="secondary-btn">View Portfolio</a>
+                            <a href="/dashboard" class="primary-btn">Back to Dashboard</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="card mini-stat">
+                        <div class="mini-stat-label">Repositories</div>
+                        <div class="mini-stat-value">{{ repos|length }}</div>
+                    </div>
+
+                    <div class="card mini-stat">
+                        <div class="mini-stat-label">Languages</div>
+                        <div class="mini-stat-value">{{ language_data|length }}</div>
+                    </div>
+
+                    <div class="card mini-stat">
+                        <div class="mini-stat-label">Profile Type</div>
+                        <div class="mini-stat-value">Public</div>
+                    </div>
+                </div>
+
+                <div class="card repos-section">
+                    <div class="repos-heading">Repositories</div>
+
+                    {% if repos %}
+                        <div class="repos-grid">
+                            {% set icons = ['🚀','💻','📊','📁','⚡','🌐'] %}
+                            {% for repo in repos[:12] %}
+                                <div class="repo-card">
+                                    <div>
+                                        <div class="repo-head">
+                                            <div class="repo-title">{{ repo.name }}</div>
+                                            <div class="repo-icon">{{ icons[loop.index0 % 6] }}</div>
+                                        </div>
+
+                                        <div class="repo-language">
+                                            <strong>Language:</strong>
+                                            {{ repo.language if repo.language else 'No language data' }}
+                                        </div>
+                                    </div>
+
+                                    <a class="repo-link" href="{{ repo.url }}" target="_blank">Open Repository</a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            No repositories found for this GitHub user.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

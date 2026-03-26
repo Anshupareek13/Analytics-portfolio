@@ -18,14 +18,26 @@ app.secret_key = os.getenv("SECRET_KEY", "secret")
 # MONGODB SETUP
 # -------------------------------
 MONGO_URI = os.getenv("MONGO_URI")
-if not MONGO_URI:
-    raise ValueError("MONGO_URI environment variable is not set")
 
-client = MongoClient(MONGO_URI)
-db = client["analytics_portfolio"]
+client = None
+db = None
+users_collection = None
+projects_collection = None
 
-users_collection = db["users"]
-projects_collection = db["projects"]
+if MONGO_URI:
+    try:
+        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+        db = client["analytics_portfolio"]
+        users_collection = db["users"]
+        projects_collection = db["projects"]
+    except Exception as e:
+        print("MongoDB connection setup failed:", e)
+
+
+# health route
+@app.route("/health")
+def health():
+    return "OK", 200
 
 # -------------------------------
 # PROFILE PHOTO SETUP
@@ -134,6 +146,9 @@ def complete_profile_tuple(user):
 # -------------------------------
 @app.route("/", methods=["GET", "POST"])
 def login():
+    if users_collection is None:
+        return "MongoDB not connected. Check MONGO_URI in Render Environment Variables.", 500
+
     if "user" in session:
         return redirect("/dashboard")
 

@@ -14,53 +14,23 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "secret")
 
-# -------------------------------
-# MONGODB SETUP
-# -------------------------------
 MONGO_URI = os.getenv("MONGO_URI")
+if not MONGO_URI:
+    raise ValueError("MONGO_URI environment variable is not set")
 
-client = None
-db = None
-users_collection = None
-projects_collection = None
+client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+db = client["analytics_portfolio"]
 
-if MONGO_URI:
-    try:
-        client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-        db = client["analytics_portfolio"]
-        users_collection = db["users"]
-        projects_collection = db["projects"]
-    except Exception as e:
-        print("MongoDB connection setup failed:", e)
+users_collection = db["users"]
+projects_collection = db["projects"]
 
-
-# health route
-@app.route("/health")
-def health():
-    return "OK", 200
-
-# -------------------------------
-# PROFILE PHOTO SETUP
-# -------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 
-# -------------------------------
-# HELPER FUNCTIONS
-# -------------------------------
-def get_logged_in_username():
-    return session.get("user")
-
-
 def project_doc_to_tuple(project):
-    """
-    Old SQLite tuple format:
-    (id, username, title, description, tech, profile_photo, github)
-    """
     return (
         str(project.get("_id")),
         project.get("username", ""),
@@ -73,13 +43,8 @@ def project_doc_to_tuple(project):
 
 
 def user_profile_tuple(user):
-    """
-    Old SQLite profile tuple format:
-    (full_name, role, about, skills, email, linkedin, github_username)
-    """
     if not user:
         return None
-
     return (
         user.get("full_name", ""),
         user.get("role", ""),
@@ -92,13 +57,8 @@ def user_profile_tuple(user):
 
 
 def dashboard_user_tuple(user):
-    """
-    Old dashboard tuple format:
-    (username, email, profile_photo, github_username)
-    """
     if not user:
         return None
-
     return (
         user.get("username", ""),
         user.get("email", ""),
@@ -108,13 +68,8 @@ def dashboard_user_tuple(user):
 
 
 def edit_profile_tuple(user):
-    """
-    Old edit profile tuple format:
-    (username, email, profile_photo)
-    """
     if not user:
         return None
-
     return (
         user.get("username", ""),
         user.get("email", ""),
@@ -123,13 +78,8 @@ def edit_profile_tuple(user):
 
 
 def complete_profile_tuple(user):
-    """
-    Old complete_profile tuple format:
-    (full_name, role, about, skills, email, linkedin, github_username)
-    """
     if not user:
         return ("", "", "", "", "", "", "")
-
     return (
         user.get("full_name", ""),
         user.get("role", ""),
@@ -141,14 +91,13 @@ def complete_profile_tuple(user):
     )
 
 
-# -------------------------------
-# HOME / LOGIN
-# -------------------------------
+@app.route("/health")
+def health():
+    return "OK", 200
+
+
 @app.route("/", methods=["GET", "POST"])
 def login():
-    if users_collection is None:
-        return "MongoDB not connected. Check MONGO_URI in Render Environment Variables.", 500
-
     if "user" in session:
         return redirect("/dashboard")
 
@@ -178,9 +127,6 @@ def login():
     return render_template("login.html")
 
 
-# -------------------------------
-# SIGNUP
-# -------------------------------
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if "user" in session:
@@ -227,9 +173,6 @@ def signup():
     return render_template("signup.html")
 
 
-# -------------------------------
-# ABOUT US
-# -------------------------------
 @app.route("/about")
 def about():
     if "user" not in session:
@@ -237,22 +180,17 @@ def about():
     return render_template("about.html")
 
 
-# -------------------------------
-# DASHBOARD
-# -------------------------------
 @app.route("/dashboard")
 def dashboard():
     if "user" not in session:
         return redirect("/")
 
     username = session["user"]
-
     project_docs = list(projects_collection.find({"username": username}))
     projects = [project_doc_to_tuple(project) for project in project_docs]
 
     user_doc = users_collection.find_one({"username": username})
     user = dashboard_user_tuple(user_doc)
-
     github_username = user[3] if user and user[3] else None
 
     tech_list = []
@@ -272,9 +210,6 @@ def dashboard():
     )
 
 
-# -------------------------------
-# ADD PROJECT
-# -------------------------------
 @app.route("/add_project", methods=["GET", "POST"])
 def add_project():
     if "user" not in session:
@@ -302,9 +237,6 @@ def add_project():
     return render_template("add_project.html")
 
 
-# -------------------------------
-# DELETE PROJECT
-# -------------------------------
 @app.route("/delete_project/<project_id>")
 def delete_project(project_id):
     if "user" not in session:
@@ -322,9 +254,6 @@ def delete_project(project_id):
     return redirect("/dashboard")
 
 
-# -------------------------------
-# PORTFOLIO PAGE
-# -------------------------------
 @app.route("/portfolio/<username>")
 def portfolio(username):
     user_doc = users_collection.find_one({"username": username})
@@ -373,7 +302,6 @@ def portfolio(username):
             filled_fields += 1
 
     profile_score += filled_fields * 4
-
     if profile_score > 100:
         profile_score = 100
 
@@ -397,9 +325,6 @@ def portfolio(username):
     )
 
 
-# -------------------------------
-# GITHUB ANALYTICS
-# -------------------------------
 @app.route("/github/<username>")
 def github(username):
     url = f"https://api.github.com/users/{username}/repos"
@@ -409,7 +334,6 @@ def github(username):
         return "GitHub user not found or API error"
 
     repos = response.json()
-
     repo_list = []
     languages = []
 
@@ -420,7 +344,6 @@ def github(username):
                 "url": repo.get("html_url"),
                 "language": repo.get("language")
             })
-
             if repo.get("language"):
                 languages.append(repo.get("language"))
 
@@ -434,9 +357,6 @@ def github(username):
     )
 
 
-# -------------------------------
-# EDIT PROFILE
-# -------------------------------
 @app.route("/edit_profile", methods=["GET", "POST"])
 def edit_profile():
     if "user" not in session:
@@ -482,15 +402,8 @@ def edit_profile():
             photo_path = os.path.join("static", "uploads", filename).replace("\\", "/")
             update_data["profile_photo"] = photo_path
 
-        users_collection.update_one(
-            {"username": old_username},
-            {"$set": update_data}
-        )
-
-        projects_collection.update_many(
-            {"username": old_username},
-            {"$set": {"username": new_username}}
-        )
+        users_collection.update_one({"username": old_username}, {"$set": update_data})
+        projects_collection.update_many({"username": old_username}, {"$set": {"username": new_username}})
 
         session["user"] = new_username
         flash("Profile updated successfully")
@@ -498,13 +411,9 @@ def edit_profile():
 
     user_doc = users_collection.find_one({"username": old_username})
     user = edit_profile_tuple(user_doc)
-
     return render_template("edit_profile.html", user=user)
 
 
-# -------------------------------
-# COMPLETE PROFILE
-# -------------------------------
 @app.route("/complete_profile", methods=["GET", "POST"])
 def complete_profile():
     if "user" not in session:
@@ -523,17 +432,15 @@ def complete_profile():
 
         users_collection.update_one(
             {"username": username},
-            {
-                "$set": {
-                    "full_name": full_name,
-                    "role": role,
-                    "about": about,
-                    "skills": skills,
-                    "email": email,
-                    "linkedin": linkedin,
-                    "github_username": github_username
-                }
-            }
+            {"$set": {
+                "full_name": full_name,
+                "role": role,
+                "about": about,
+                "skills": skills,
+                "email": email,
+                "linkedin": linkedin,
+                "github_username": github_username
+            }}
         )
 
         flash("Profile updated successfully")
@@ -541,13 +448,9 @@ def complete_profile():
 
     user_doc = users_collection.find_one({"username": username})
     user_data = complete_profile_tuple(user_doc)
-
     return render_template("complete_profile.html", user_data=user_data)
 
 
-# -------------------------------
-# CHANGE PASSWORD
-# -------------------------------
 @app.route("/change_password", methods=["GET", "POST"])
 def change_password():
     if "user" not in session:
@@ -567,7 +470,6 @@ def change_password():
             return redirect("/change_password")
 
         user = users_collection.find_one({"username": session["user"]})
-
         if not user:
             flash("User not found")
             return redirect("/change_password")
@@ -587,9 +489,6 @@ def change_password():
     return render_template("change_password.html")
 
 
-# -------------------------------
-# FORGOT PASSWORD
-# -------------------------------
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
@@ -616,9 +515,6 @@ def forgot_password():
     return render_template("forgot_password.html")
 
 
-# -------------------------------
-# LOGOUT
-# -------------------------------
 @app.route("/logout")
 def logout():
     session.pop("user", None)
@@ -626,9 +522,6 @@ def logout():
     return redirect("/")
 
 
-# -------------------------------
-# ATS / ROLE ANALYSIS
-# -------------------------------
 ROLE_SKILLS = {
     "data analyst": ["python", "sql", "excel", "power bi", "pandas", "numpy", "data visualization"],
     "data scientist": ["python", "pandas", "numpy", "machine learning", "statistics", "matplotlib", "sklearn"],
@@ -645,7 +538,6 @@ ROLE_SKILLS = {
 def analyze_project_for_role(project_title, project_description, project_tech, role, domain):
     role_key = role.lower().strip()
     required_skills = ROLE_SKILLS.get(role_key, [])
-
     combined_text = f"{project_title} {project_description} {project_tech} {domain}".lower()
 
     matched_skills = []
@@ -657,13 +549,9 @@ def analyze_project_for_role(project_title, project_description, project_tech, r
         else:
             missing_skills.append(skill)
 
-    if required_skills:
-        skill_score = int((len(matched_skills) / len(required_skills)) * 100)
-    else:
-        skill_score = 0
+    skill_score = int((len(matched_skills) / len(required_skills)) * 100) if required_skills else 0
 
     bonus = 0
-
     if project_description and len(project_description.strip()) > 40:
         bonus += 10
 
@@ -673,9 +561,7 @@ def analyze_project_for_role(project_title, project_description, project_tech, r
     elif tech_count >= 2:
         bonus += 5
 
-    final_score = skill_score + bonus
-    if final_score > 100:
-        final_score = 100
+    final_score = min(skill_score + bonus, 100)
 
     if final_score >= 80:
         level = "High Level 🚀"
@@ -703,7 +589,6 @@ def ats():
         return redirect("/")
 
     username = session["user"]
-
     project_docs = list(projects_collection.find({"username": username}))
     projects = [project_doc_to_tuple(project) for project in project_docs]
 
@@ -761,8 +646,5 @@ def ats():
     )
 
 
-# -------------------------------
-# RUN APP
-# -------------------------------
 if __name__ == "__main__":
     app.run(debug=True)

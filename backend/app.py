@@ -351,13 +351,13 @@ def github(username):
         if profile_response.status_code == 403:
             return "GitHub API rate limit exceeded. Try again later."
         if profile_response.status_code != 200:
-            return f"GitHub API profile error: {profile_response.status_code} - {profile_response.text}"
+            return f"GitHub API profile error: {profile_response.status_code}"
 
         repos_response = requests.get(repos_url, headers=headers, timeout=15)
         if repos_response.status_code == 403:
             return "GitHub API rate limit exceeded. Try again later."
         if repos_response.status_code != 200:
-            return f"GitHub repos fetch error: {repos_response.status_code} - {repos_response.text}"
+            return f"GitHub repos fetch error: {repos_response.status_code}"
 
         repos = repos_response.json()
 
@@ -365,15 +365,13 @@ def github(username):
         languages = []
 
         for repo in repos:
-            if isinstance(repo, dict):
-                repo_list.append({
-                    "name": repo.get("name"),
-                    "url": repo.get("html_url"),
-                    "language": repo.get("language")
-                })
-
-                if repo.get("language"):
-                    languages.append(repo.get("language"))
+            repo_list.append({
+                "name": repo.get("name"),
+                "url": repo.get("html_url"),
+                "language": repo.get("language")
+            })
+            if repo.get("language"):
+                languages.append(repo.get("language"))
 
         language_data = Counter(languages)
 

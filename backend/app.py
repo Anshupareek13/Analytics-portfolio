@@ -327,6 +327,65 @@ def portfolio(username):
 
 @app.route("/github/<username>")
 def github(username):
+    username = username.strip()
+
+    if not username:
+        return "GitHub username is missing"
+
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "analytics-portfolio-app"
+    }
+
+    github_token = os.getenv("GITHUB_TOKEN")
+    if github_token:
+        headers["Authorization"] = f"Bearer {github_token}"
+
+    profile_url = f"https://api.github.com/users/{username}"
+    repos_url = f"https://api.github.com/users/{username}/repos?per_page=100&sort=updated"
+
+    try:
+        profile_response = requests.get(profile_url, headers=headers, timeout=15)
+        if profile_response.status_code == 404:
+            return f"GitHub user '{username}' not found"
+        if profile_response.status_code == 403:
+            return "GitHub API rate limit exceeded. Try again later."
+        if profile_response.status_code != 200:
+            return f"GitHub API profile error: {profile_response.status_code} - {profile_response.text}"
+
+        repos_response = requests.get(repos_url, headers=headers, timeout=15)
+        if repos_response.status_code == 403:
+            return "GitHub API rate limit exceeded. Try again later."
+        if repos_response.status_code != 200:
+            return f"GitHub repos fetch error: {repos_response.status_code} - {repos_response.text}"
+
+        repos = repos_response.json()
+
+        repo_list = []
+        languages = []
+
+        for repo in repos:
+            if isinstance(repo, dict):
+                repo_list.append({
+                    "name": repo.get("name"),
+                    "url": repo.get("html_url"),
+                    "language": repo.get("language")
+                })
+
+                if repo.get("language"):
+                    languages.append(repo.get("language"))
+
+        language_data = Counter(languages)
+
+        return render_template(
+            "github.html",
+            repos=repo_list,
+            username=username,
+            language_data=language_data
+        )
+
+    except requests.exceptions.RequestException as e:
+        return f"GitHub request failed: {str(e)}"
     url = f"https://api.github.com/users/{username}/repos"
     response = requests.get(url, timeout=15)
 

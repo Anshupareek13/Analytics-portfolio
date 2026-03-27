@@ -559,6 +559,11 @@
                         <a href="/edit_profile">Profile</a>
                         <a href="/change_password">Change Password</a>
                         <a href="/about">About Us</a>
+                        <form action="/delete_account" method="POST" onsubmit="return confirm('⚠️ Are you sure you want to delete your account? This cannot be undone!')" style="margin:0;">
+                            <button type="submit" style="background:none;border:none;color:red;cursor:pointer;padding:10px 15px;text-align:left;width:100%;">
+                                Delete Account
+                            </button>
+                        </form>
                         <a href="/logout">Logout</a>
                     </div>
                 </div>

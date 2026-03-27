@@ -508,6 +508,27 @@ def complete_profile():
     return render_template("complete_profile.html", user_data=user_data)
 
 
+@app.route("/delete_account", methods=["POST"])
+def delete_account():
+    if "user" not in session:
+        return redirect("/")
+
+    username = session["user"]
+
+    # user delete
+    users_collection.delete_one({"username": username})
+
+    # user ke sare projects delete
+    projects_collection.delete_many({"username": username})
+
+    # session clear
+    session.clear()
+
+    flash("Your account has been deleted successfully")
+    return redirect("/")
+
+
+
 @app.route("/change_password", methods=["GET", "POST"])
 def change_password():
     if "user" not in session:

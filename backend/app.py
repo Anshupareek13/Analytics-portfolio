@@ -219,7 +219,7 @@ def add_project():
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         tech = request.form.get("tech", "").strip()
-
+        github = request.form.get("github", "").strip()
         if not title or not description or not tech:
             flash("Please fill all required fields")
             return redirect("/add_project")
@@ -229,6 +229,7 @@ def add_project():
             "title": title,
             "description": description,
             "tech": tech,
+            "github": github,
             "profile_photo": "",
             "github": "",
             "created_at": datetime.utcnow()
@@ -261,7 +262,8 @@ def edit_project(project_id):
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         tech = request.form.get("tech", "").strip()
-
+        github = request.form.get("github", "").strip()
+        
         if not title or not description or not tech:
             flash("Please fill all required fields")
             return redirect(f"/edit_project/{project_id}")
@@ -272,7 +274,8 @@ def edit_project(project_id):
                 "$set": {
                     "title": title,
                     "description": description,
-                    "tech": tech
+                    "tech": tech,
+                    "github": github
                 }
             }
         )

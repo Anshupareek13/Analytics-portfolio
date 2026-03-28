@@ -219,7 +219,10 @@ def add_project():
         title = request.form.get("title", "").strip()
         description = request.form.get("description", "").strip()
         tech = request.form.get("tech", "").strip()
-        github = request.form.get("github", "").strip()
+
+        if not title or not description or not tech:
+            flash("Please fill all required fields")
+            return redirect("/add_project")
 
         projects_collection.insert_one({
             "username": session["user"],
@@ -227,14 +230,57 @@ def add_project():
             "description": description,
             "tech": tech,
             "profile_photo": "",
-            "github": github,
+            "github": "",
             "created_at": datetime.utcnow()
         })
 
         flash("Project added successfully")
         return redirect("/dashboard")
 
-    return render_template("add_project.html")
+    return render_template("add_project.html", project=None, edit_mode=False)
+
+
+@app.route("/edit_project/<project_id>", methods=["GET", "POST"])
+def edit_project(project_id):
+    if "user" not in session:
+        return redirect("/")
+
+    try:
+        project = projects_collection.find_one({
+            "_id": ObjectId(project_id),
+            "username": session["user"]
+        })
+    except Exception:
+        project = None
+
+    if not project:
+        flash("Project not found")
+        return redirect("/dashboard")
+
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        tech = request.form.get("tech", "").strip()
+
+        if not title or not description or not tech:
+            flash("Please fill all required fields")
+            return redirect(f"/edit_project/{project_id}")
+
+        projects_collection.update_one(
+            {"_id": ObjectId(project_id), "username": session["user"]},
+            {
+                "$set": {
+                    "title": title,
+                    "description": description,
+                    "tech": tech
+                }
+            }
+        )
+
+        flash("Project updated successfully")
+        return redirect("/dashboard")
+
+    return render_template("add_project.html", project=project, edit_mode=True)
 
 
 @app.route("/delete_project/<project_id>")

@@ -635,8 +635,19 @@
                                     {% if project[5] %}
                                         <a href="{{ project[5] }}" target="_blank" class="action-btn">GitHub</a>
                                     {% endif %}
+
+                                    <button class="action-btn" onclick="confirmEdit('{{ project[0] }}')">Edit</button>
+
                                     <button class="delete-btn" onclick="confirmDelete('{{ project[0] }}')">Delete</button>
                                 </div>
+
+                                <script>
+                                function confirmEdit(projectId) {
+                                    if (confirm("✏️ Are you sure you want to edit this project?")) {
+                                        window.location.href = "/edit_project/" + projectId;
+                                    }
+                                }
+                                </script>
                             </div>
                         {% endfor %}
                     </div>

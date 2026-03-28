@@ -343,7 +343,7 @@
                             {% for project in projects %}
                                 <option value="{{ project[0] }}"
                                     {% if selected_project_id and selected_project_id|string == project[0]|string %}selected{% endif %}>
-                                    {{ project[1] }}
+                                    {{ project[2] }}
                                 </option>
                             {% endfor %}
                         </select>
